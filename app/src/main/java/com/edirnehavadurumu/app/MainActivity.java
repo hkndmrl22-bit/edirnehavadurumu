@@ -112,9 +112,7 @@ public class MainActivity extends Activity {
     }
 
     void show(String raw) {
-        String s = raw.replace("\\\\n", " ").replace("\\n", " ");
-        s = s.replace("\\"", """);
-        final String data = s;
+        String data = raw.replace("\\\\n", "\\n").replace("\\\"", "\"");
         runOnUiThread(() -> {
             status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
             list.removeAllViews();
@@ -127,11 +125,10 @@ public class MainActivity extends Activity {
             for (String line : lines) {
                 line = line.trim();
                 if (line.length() == 0) continue;
-                if (line.contains("Hissedilen:")) {
-                    list.addView(card(line.replace("Hissedilen:", "Hissedilen: "), 17));
-                    added++;
-                } else if (line.matches(".*(Nem \(%\)|Rüzgar \(km/sa\)).*") && added < 5) {
+                if (line.contains("Hissedilen:") || line.contains("Nem (%)") || line.contains("Rüzgar (km/sa)")) {
                     list.addView(card(line, 15));
+                    added++;
+                    if (added >= 6) break;
                 }
             }
 
@@ -140,18 +137,17 @@ public class MainActivity extends Activity {
             int count = 0;
             for (String line : lines) {
                 String q = line.trim();
-                for (String d : days) {
-                    if (q.startsWith(d) && q.contains("°C")) {
-                        list.addView(card(q, 16));
-                        count++;
-                        break;
-                    }
+                boolean day = false;
+                for (String d : days) if (q.startsWith(d)) day = true;
+                if (day && q.contains("°C")) {
+                    list.addView(card(q, 16));
+                    count++;
+                    if (count >= 5) break;
                 }
-                if (count >= 5) break;
             }
 
             list.addView(card("SAATLİK TAHMİN", 19));
-            list.addView(card("Saatlik veriler MGM sayfasından alınmaktadır. Ayrıntılar için ilgili merkezin tahminleri güncelleniyor.", 14));
+            list.addView(card("MGM verileri uygulama içinde gösteriliyor. Saatlik tahminler otomatik güncellenir.", 14));
         });
     }
 
