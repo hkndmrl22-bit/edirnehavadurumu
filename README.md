@@ -3,3 +3,5 @@ Sıfırdan temiz Android projesi. MGM Edirne saatlik tahmin sayfasını WebView 
 
 
 Build trigger: clean project deployed.
+
+Logo fix build trigger.
