@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application android:theme="@style/AppTheme" android:label="Edirne Hava Durumu" android:icon="@drawable/edirne_logo" android:roundIcon="@drawable/edirne_logo" android:allowBackup="false" android:supportsRtl="true">
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="weather_alerts"/>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/edirne_logo"/>
         <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
         </activity>
