@@ -4,6 +4,11 @@
     <application android:theme="@style/AppTheme" android:label="Edirne Hava Durumu" android:icon="@drawable/edirne_logo" android:roundIcon="@drawable/edirne_logo" android:allowBackup="false" android:supportsRtl="true">
         <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="weather_alerts"/>
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/edirne_logo"/>
+        <service android:name=".EdirneFirebaseMessagingService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
         <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
         </activity>
