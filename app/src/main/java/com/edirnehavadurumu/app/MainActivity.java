@@ -2,6 +2,8 @@ package com.edirnehavadurumu.app;
 
 import android.app.*;
 import android.os.*;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.*;
@@ -41,6 +43,9 @@ public class MainActivity extends Activity {
         super.onCreate(b);
         getWindow().setStatusBarColor(blue);
         ui();
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
+        }
         collector();
     }
 
