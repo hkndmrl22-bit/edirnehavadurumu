@@ -160,8 +160,7 @@ public class MainActivity extends Activity {
             }
 
             list.addView(card("SAATLİK TAHMİN", 19));
-            list.addView(card("MGM verileri uygulama içinde gösteriliyor. Saatlik tahminler otomatik güncellenir.", 14));
-        });
+        list.addView(card("MGM verileri uygulama içinde gösteriliyor. Saatlik tahminler otomatik güncellenir.", 14));
     }
 
     protected void onDestroy() {
