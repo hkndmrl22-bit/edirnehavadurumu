@@ -125,15 +125,15 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) {
             // WebView may already return plain text.
         }
-        runOnUiThread(() -> {
-            final String decodedData = data;
+        final String decodedData = data;
+        runOnUiThread(() => {
             status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
             list.removeAllViews();
 
             String selected = districts[sp.getSelectedItemPosition()];
             list.addView(card(selected + " • Güncel Durum", 19));
 
-            String[] lines = data.split("\\n");
+            String[] lines = decodedData.split("\\n");
             int added = 0;
             for (String line : lines) {
                 line = line.trim();
