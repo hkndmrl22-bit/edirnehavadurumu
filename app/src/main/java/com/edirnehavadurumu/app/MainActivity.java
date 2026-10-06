@@ -117,7 +117,16 @@ public class MainActivity extends Activity {
     }
 
     void show(String raw) {
-        String data = raw.replace("\\\\n", "\\n").replace("\\\"", "\"");
+        String data = raw;
+        try {
+            Object decoded = new org.json.JSONTokener(raw).nextValue();
+            if (decoded instanceof String) data = (String) decoded;
+        } catch (Exception ignored) {
+            data = raw;
+        }
+        data = data.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r");
+
+        final String parsedData = data;
         runOnUiThread(() -> {
             status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
             list.removeAllViews();
@@ -125,7 +134,7 @@ public class MainActivity extends Activity {
             String selected = districts[sp.getSelectedItemPosition()];
             list.addView(card(selected + " • Güncel Durum", 19));
 
-            String[] lines = data.split("\\n");
+            String[] lines = parsedData.split("\n");
             int added = 0;
             for (String line : lines) {
                 line = line.trim();
