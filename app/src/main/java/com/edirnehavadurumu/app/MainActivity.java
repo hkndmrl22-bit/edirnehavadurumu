@@ -125,13 +125,6 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) {
             // WebView may already return plain text.
         }
-        data = data.replace("\\\\n", "\\n")
-                   .replace("\\\\r", "\\r")
-                   .replace("\\\\t", "\\t")
-                   .replace("\\\\"", "\"");
-        data = data.replace("\\n", "\n")
-                   .replace("\\r", "\r")
-                   .replace("\\t", "\t");
         runOnUiThread(() -> {
             status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
             list.removeAllViews();
