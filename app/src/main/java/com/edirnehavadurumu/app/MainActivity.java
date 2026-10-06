@@ -123,43 +123,41 @@ public class MainActivity extends Activity {
             Object decoded = new JSONTokener(raw).nextValue();
             if (decoded instanceof String) data = (String) decoded;
         } catch (Exception ignored) {
-            // WebView may already return plain text.
         }
-        final String decodedData = data;
-        runOnUiThread(() => {
-            status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
-            list.removeAllViews();
 
-            String selected = districts[sp.getSelectedItemPosition()];
-            list.addView(card(selected + " • Güncel Durum", 19));
+        status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
+        list.removeAllViews();
 
-            String[] lines = decodedData.split("\\n");
-            int added = 0;
-            for (String line : lines) {
-                line = line.trim();
-                if (line.length() == 0) continue;
-                if (line.contains("Hissedilen:") || line.contains("Nem (%)") || line.contains("Rüzgar (km/sa)")) {
-                    list.addView(card(line, 15));
-                    added++;
-                    if (added >= 6) break;
-                }
+        String selected = districts[sp.getSelectedItemPosition()];
+        list.addView(card(selected + " • Güncel Durum", 19));
+
+        String[] lines = data.split("\\n");
+        int added = 0;
+        for (String line : lines) {
+            line = line.trim();
+            if (line.length() == 0) continue;
+            if (line.contains("Hissedilen:") || line.contains("Nem (%)") || line.contains("Rüzgar (km/sa)")) {
+                list.addView(card(line, 15));
+                added++;
+                if (added >= 6) break;
             }
+        }
 
-            list.addView(card("5 GÜNLÜK TAHMİN", 19));
-            String[] days = {"Cumartesi","Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma"};
-            int count = 0;
-            for (String line : lines) {
-                String q = line.trim();
-                boolean day = false;
-                for (String d : days) if (q.startsWith(d)) day = true;
-                if (day && q.contains("°C")) {
-                    list.addView(card(q, 16));
-                    count++;
-                    if (count >= 5) break;
-                }
+        list.addView(card("5 GÜNLÜK TAHMİN", 19));
+        String[] days = {"Cumartesi","Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma"};
+        int count = 0;
+        for (String line : lines) {
+            String q = line.trim();
+            boolean day = false;
+            for (String d : days) if (q.startsWith(d)) day = true;
+            if (day && q.contains("°C")) {
+                list.addView(card(q, 16));
+                count++;
+                if (count >= 5) break;
             }
+        }
 
-            list.addView(card("SAATLİK TAHMİN", 19));
+        list.addView(card("SAATLİK TAHMİN", 19));
         list.addView(card("MGM verileri uygulama içinde gösteriliyor. Saatlik tahminler otomatik güncellenir.", 14));
     }
 
