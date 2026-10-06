@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
         w.getSettings().setDomStorageEnabled(true);
         w.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView v, String u) {
-                v.evaluateJavascript("(function(){return document.body?document.body.innerText:''})()", x -> show(x));
+                v.evaluateJavascript("(function(){var rows=[];document.querySelectorAll('table tr').forEach(function(tr){var a=[];tr.querySelectorAll('th,td').forEach(function(td){var s=(td.innerText||td.textContent||'').replace(/\\s+/g,' ').trim();if(s)a.push(s);});if(a.length)rows.push(a.join(' | '));});return rows.length?rows.join('\\n'):(document.body?document.body.innerText:'');})()", x -> show(x));
             }
         });
         addContentView(w, new ViewGroup.LayoutParams(1, 1));
@@ -121,50 +121,53 @@ public class MainActivity extends Activity {
         try {
             Object decoded = new org.json.JSONTokener(raw).nextValue();
             if (decoded instanceof String) data = (String) decoded;
-        } catch (Exception ignored) {
-            data = raw;
-        }
-        data = data.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r");
-
+        } catch (Exception ignored) {}
+        data = data.replace("\\\\n", "\\n").replace("\\\\t", "\\t").replace("\\\\r", "\\r");
         final String parsedData = data;
+
         runOnUiThread(() -> {
             status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
             list.removeAllViews();
-
             String selected = districts[sp.getSelectedItemPosition()];
             list.addView(card(selected + " • Güncel Durum", 19));
 
-            String[] lines = parsedData.split("\n");
-            int added = 0;
+            String[] lines = parsedData.split("\\n");
+            int shown = 0;
+            boolean headerShown = false;
             for (String line : lines) {
-                line = line.trim();
-                if (line.length() == 0) continue;
-                if (line.contains("Hissedilen:") || line.contains("Nem (%)") || line.contains("Rüzgar (km/sa)")) {
-                    list.addView(card(line, 15));
-                    added++;
-                    if (added >= 6) break;
+                String q = line.replace("\\t", " ").trim();
+                if (q.length() == 0) continue;
+                if (!headerShown && (q.contains("Saat") || q.contains("Beklenen Hadise"))) {
+                    list.addView(card(q, 14));
+                    headerShown = true;
+                    continue;
+                }
+                if (q.matches(".*\\d+.*°C.*") || q.contains("Hissedilen") || q.contains("Nem (%)")) {
+                    list.addView(card(q, 15));
+                    shown++;
+                    if (shown >= 8) break;
                 }
             }
 
             list.addView(card("5 GÜNLÜK TAHMİN", 19));
-            String[] days = {"Cumartesi","Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma"};
-            int count = 0;
+            int daily = 0;
             for (String line : lines) {
-                String q = line.trim();
-                boolean day = false;
-                for (String d : days) if (q.startsWith(d)) day = true;
-                if (day && q.contains("°C")) {
-                    list.addView(card(q, 16));
-                    count++;
-                    if (count >= 5) break;
+                String q = line.replace("\\t", " ").trim();
+                if (q.length() == 0) continue;
+                if (q.contains("°C") && (q.contains("|") || q.contains("En Düşük") || q.contains("En Yüksek"))) {
+                    list.addView(card(q, 15));
+                    daily++;
+                    if (daily >= 5) break;
                 }
+            }
+            if (shown == 0) {
+                list.addView(card("MGM sayfasından veri satırları alınamadı. Sayfa yapısı değişmiş olabilir.", 14));
             }
 
             list.addView(card("SAATLİK TAHMİN", 19));
             list.addView(card("MGM verileri uygulama içinde gösteriliyor. Saatlik tahminler otomatik güncellenir.", 14));
         });
     }
-
     protected void onDestroy() {
         h.removeCallbacksAndMessages(null);
         if (w != null) w.destroy();
