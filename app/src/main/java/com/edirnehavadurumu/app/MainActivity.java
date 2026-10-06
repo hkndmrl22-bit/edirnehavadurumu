@@ -10,6 +10,7 @@ import android.view.*;
 import android.widget.*;
 import android.webkit.*;
 import java.util.*;
+import org.json.JSONTokener;
 
 public class MainActivity extends Activity {
     LinearLayout list;
@@ -117,7 +118,20 @@ public class MainActivity extends Activity {
     }
 
     void show(String raw) {
-        String data = raw.replace("\\\\n", "\\n").replace("\\\"", "\"");
+        String data = raw;
+        try {
+            Object decoded = new JSONTokener(raw).nextValue();
+            if (decoded instanceof String) data = (String) decoded;
+        } catch (Exception ignored) {
+            // WebView may already return plain text.
+        }
+        data = data.replace("\\\\n", "\\n")
+                   .replace("\\\\r", "\\r")
+                   .replace("\\\\t", "\\t")
+                   .replace("\\\\"", "\"");
+        data = data.replace("\\n", "\n")
+                   .replace("\\r", "\r")
+                   .replace("\\t", "\t");
         runOnUiThread(() -> {
             status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
             list.removeAllViews();
