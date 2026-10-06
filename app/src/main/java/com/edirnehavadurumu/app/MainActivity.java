@@ -125,8 +125,8 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) {
             // WebView may already return plain text.
         }
-        final String decodedData = data;
         runOnUiThread(() -> {
+            final String decodedData = data;
             status.setText("MGM verisi alındı • " + android.text.format.DateFormat.format("HH:mm", new Date()));
             list.removeAllViews();
 
